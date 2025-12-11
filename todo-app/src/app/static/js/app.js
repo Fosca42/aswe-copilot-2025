@@ -31,6 +31,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Update browser title with incomplete todo count
+function updateBrowserTitle() {
+    const listContent = document.getElementById('list-content');
+    if (!listContent) {
+        return;
+    }
+
+    const listName = listContent.dataset.listName;
+    if (!listName) {
+        return;
+    }
+
+    // Count incomplete todos
+    const incompleteTodos = document.querySelectorAll('.todo-item:not(.completed)').length;
+
+    // Update title
+    if (incompleteTodos > 0) {
+        document.title = `(${incompleteTodos}) ${listName} - Todo App`;
+    } else {
+        document.title = `${listName} - Todo App`;
+    }
+}
+
 // Initialize SortableJS for list reordering (sidebar)
 function initListSortable() {
     const sidebarLists = document.getElementById('sidebar-lists');
@@ -312,6 +335,13 @@ document.body.addEventListener('htmx:afterSwap', (evt) => {
                 currentList.classList.add('active');
             }
         }
+        // Update browser title when main content changes
+        updateBrowserTitle();
+    }
+
+    // Update browser title when todos list changes (add/toggle/delete)
+    if (evt.detail.target.id === 'todos-list' || evt.detail.target.classList?.contains('todo-item')) {
+        updateBrowserTitle();
     }
 });
 
